@@ -1,0 +1,11 @@
+﻿<p>OH DIABO</p>
+<MudButton>Sair (@(remainingSeconds) segundos)</MudButton>
+<MudButton>Continuar</MudButton>
+@code {
+    private int remainingSeconds;
+
+    protected override void OnInitialized()
+    {
+        remainingSeconds = InactivityMonitorManager.MaxResponseTime;
+    }
+}

@@ -1,0 +1,58 @@
+﻿@code {
+    private bool showInactivityDialog;
+    private bool _visibleOverlay;
+
+    @inject IDialogService DialogService
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await InactivityMonitorManager.RegisterInactivityMonitor();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        //showInactivityDialog = false;
+        InactivityMonitorManager.OnInactivityTimeReached = EventCallback.Factory.Create(this, ShowInactivityAlert);
+        InactivityMonitorManager.OnInactivityReached += ShowInactivityAlert;
+
+        await Task.CompletedTask;
+    }
+
+    private async Task ShowInactivityAlert()
+    {
+       //if (mbox != null)
+       //{
+       //    bool? result = await mbox.Show();
+       //    state = result == null ? "Canceled" : "Deleted!";
+       //    StateHasChanged();
+       //}
+    }
+
+    private void ShowInactivityAlert(Object? source, EventArgs e)
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = false };
+        InvokeAsync(() => DialogService.Show<InactivityDialog>("Alerta Inatividade", options));
+        InvokeAsync(StateHasChanged);
+    }
+
+    MudMessageBox? mbox { get; set; }
+    string state = "Message box hasn't been opened yet";
+}
+<MudOverlay @bind-Visible="_visibleOverlay" DarkBackground="true" />
+<Router AppAssembly="@typeof(Program).Assembly">
+    <Found Context="routeData">
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(Layout.MainLayout)" />
+        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+    </Found>
+</Router>
+<MudMessageBox @ref="mbox" Title="Warning" CancelText="SAIR AGORA">
+    <MessageContent>
+        TAS AQUI TAS ALI
+    </MessageContent>
+    <YesButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Filled.DeleteForever">VOLTAR!</MudButton>
+    </YesButton>
+</MudMessageBox>
